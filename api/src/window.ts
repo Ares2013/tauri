@@ -31,7 +31,8 @@ class WebviewWindowHandle {
 
   constructor(label: string) {
     this.label = label
-    this.listeners = {}
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    this.listeners = Object.create(null)
   }
 
   /**
@@ -46,7 +47,11 @@ class WebviewWindowHandle {
     handler: EventCallback<T>
   ): Promise<UnlistenFn> {
     if (this._handleTauriEvent(event, handler)) {
-      return Promise.resolve(() => {})
+      return Promise.resolve(() => {
+        // eslint-disable-next-line security/detect-object-injection
+        const listeners = this.listeners[event]
+        listeners.splice(listeners.indexOf(handler), 1)
+      })
     }
     return listen(event, handler)
   }
@@ -57,9 +62,13 @@ class WebviewWindowHandle {
    * @param event the event name
    * @param handler the event handler callback
    */
-  async once<T>(event: string, handler: EventCallback<T>): Promise<void> {
+  async once<T>(event: string, handler: EventCallback<T>): Promise<UnlistenFn> {
     if (this._handleTauriEvent(event, handler)) {
-      return Promise.resolve()
+      return Promise.resolve(() => {
+        // eslint-disable-next-line security/detect-object-injection
+        const listeners = this.listeners[event]
+        listeners.splice(listeners.indexOf(handler), 1)
+      })
     }
     return once(event, handler)
   }
