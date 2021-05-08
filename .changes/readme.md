@@ -10,8 +10,15 @@ Use the following format:
 
 ```md
 ---
-"tauri.js": patch
-"tauri": minor
+"api": patch
+"tauri-bundler": patch
+"cli.rs": patch
+"cli.js": patch
+"tauri-utils": patch
+"tauri-macros": patch
+"tauri-build": patch
+"tauri-codegen": patch
+"tauri": patch
 ---
 
 Change summary goes here

@@ -1,0 +1,27 @@
+// Copyright 2019-2021 Tauri Programme within The Commons Conservancy
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
+
+export interface CargoManifest {
+  dependencies: { [k: string]: string | CargoManifestDependency }
+  package: { version: string; name: string; 'default-run': string }
+  bin: Array<{
+    name: string
+    path: string
+  }>
+}
+
+export interface CargoManifestDependency {
+  version?: string
+  path?: string
+  features?: string[]
+}
+
+export interface CargoLock {
+  package: [CargoLockPackage]
+}
+
+export interface CargoLockPackage {
+  name: string
+  version: string
+}

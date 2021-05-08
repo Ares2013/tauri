@@ -1,3 +1,7 @@
+// Copyright 2019-2021 Tauri Programme within The Commons Conservancy
+// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: MIT
+
 pub use context::{context_codegen, ContextData};
 use std::{
   borrow::Cow,
@@ -5,7 +9,7 @@ use std::{
   io::BufReader,
   path::{Path, PathBuf},
 };
-pub use tauri_api::config::Config;
+pub use tauri_utils::config::Config;
 use thiserror::Error;
 
 mod context;
@@ -13,6 +17,7 @@ pub mod embedded_assets;
 
 /// Represents all the errors that can happen while reading the config.
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum ConfigError {
   #[error("unable to access current working directory: {0}")]
   CurrentDir(std::io::Error),

@@ -1,5 +1,5 @@
 <script>
-  import { appWindow } from "@tauri-apps/api/window";
+  import { appWindow, WebviewWindow, LogicalSize, LogicalPosition } from "@tauri-apps/api/window";
   import { open as openDialog } from "@tauri-apps/api/dialog";
   import { open } from "@tauri-apps/api/shell";
 
@@ -12,20 +12,17 @@
     unminimize,
     show,
     hide,
-    setTransparent,
     setDecorations,
     setAlwaysOnTop,
-    setWidth,
-    setHeight,
-    // resize,
+    setSize,
     setMinSize,
     setMaxSize,
-    setX,
-    setY,
-    // setPosition,
+    setPosition,
     setFullscreen,
     setIcon,
   } = appWindow;
+
+  export let onMessage;
 
   let urlValue = "https://tauri.studio";
   let resizable = true;
@@ -69,19 +66,23 @@
     }).then(setIcon);
   }
 
+  function createWindow() {
+    const webview = new WebviewWindow(Math.random().toString());
+    webview.once('tauri://error', function () {
+      onMessage("Error creating new webview")
+    })
+  }
+
   $: setResizable(resizable);
   $: maximized ? maximize() : unmaximize();
-  //$: setTransparent(transparent)
   $: setDecorations(decorations);
   $: setAlwaysOnTop(alwaysOnTop);
   $: setFullscreen(fullscreen);
 
-  $: setWidth(width);
-  $: setHeight(height);
-  $: minWidth && minHeight && setMinSize(minWidth, minHeight);
-  $: maxWidth && maxHeight && setMaxSize(maxWidth, maxHeight);
-  $: setX(x);
-  $: setY(y);
+  $: setSize(new LogicalSize(width, height));
+  $: minWidth && minHeight ? setMinSize(new LogicalSize(minWidth, minHeight)) : setMinSize(null);
+  $: maxWidth && maxHeight ? setMaxSize(new LogicalSize(maxWidth, maxHeight)) : setMaxSize(null);
+  $: setPosition(new LogicalPosition(x, y));
 </script>
 
 <div class="flex col">
@@ -174,6 +175,7 @@
   <input id="url" bind:value={urlValue} />
   <button class="button" id="open-url"> Open URL </button>
 </form>
+<button class="button" on:click={createWindow}>New window</button>
 
 <style>
   .flex-row {

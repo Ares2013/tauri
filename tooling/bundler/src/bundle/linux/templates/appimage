@@ -1,0 +1,35 @@
+#!/bin/bash
+# Copyright 2019-2021 Tauri Programme within The Commons Conservancy
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
+
+set -euxo pipefail
+
+export ARCH=x86_64
+
+mkdir -p "{{app_name}}.AppDir"
+cp -r ../appimage_deb/data/usr "{{app_name}}.AppDir"
+
+cd "{{app_name}}.AppDir"
+
+wget -q -4 -O AppRun https://github.com/AppImage/AppImageKit/releases/download/continuous/AppRun-x86_64 || wget -q -4 -O AppRun https://github.com/AppImage/AppImageKit/releases/download/12/AppRun-aarch64
+chmod +x AppRun
+
+cp "{{icon_path}}" .DirIcon
+ln -s "{{icon_path}}" "{{app_name}}.png"
+
+ln -s "usr/share/applications/{{app_name}}.desktop" "{{app_name}}.desktop"
+
+cd ..
+
+mksquashfs "{{app_name}}.AppDir" "{{app_name}}.squashfs" -root-owned -noappend
+
+wget -q -4 -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage || wget -q -4 -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage
+chmod +x appimagetool
+if lsmod | grep -q fuse; then
+  ./appimagetool "{{app_name}}.AppDir" "{{appimage_filename}}"
+else
+  ./appimagetool --appimage-extract
+  ./squashfs-root/AppRun "{{app_name}}.AppDir" "{{appimage_filename}}"
+  rm -rf ./squashfs-root
+fi

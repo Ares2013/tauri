@@ -5,6 +5,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# smoke-tests repo
+/smoke-tests
+
 # Runtime data
 pids
 *.pid
@@ -70,7 +73,6 @@ TODO.md
 # Tauri output
 /bundle.json
 /config.json
-/src-tauri
 
 # rust compiled folders
 target
@@ -79,11 +81,11 @@ target
 /Cargo.lock
 /yarn.lock
 
-/cli/tauri.js/test/jest/tmp
+/tooling/cli.js/test/jest/tmp
 
 # doing this because of how our tests currently (naively) drop the tauri.conf.js in that folder
 # todo: needs a proper fic
-/cli/tauri.js/tauri.conf.js
+/tooling/cli.js/tauri.conf.js
 
 # ignore frida handlers
 __handlers__/

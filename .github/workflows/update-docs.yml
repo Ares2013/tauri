@@ -1,16 +1,20 @@
+# Copyright 2019-2021 Tauri Programme within The Commons Conservancy
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-License-Identifier: MIT
+
 name: update-docs
 
 on:
   workflow_dispatch:
     inputs:
       gitName:
-        description: 'git name for PR'
+        description: "git name for PR"
         required: false
-        default: 'tauri-bot'
+        default: "tauri-bot"
       gitEmail:
-        description: 'git email for PR'
+        description: "git email for PR"
         required: false
-        default: 'tauri-bot@tauri.studio'
+        default: "tauri-bot@tauri.studio"
 
 jobs:
   update-docs:
@@ -28,9 +32,9 @@ jobs:
       - name: install webkit2gtk
         run: |
           sudo apt-get update
-          sudo apt-get install -y webkit2gtk-4.0
+          sudo apt-get install -y libgtk-3-dev libgtksourceview-3.0-dev webkit2gtk-4.0 libappindicator3-dev
       - name: generate rust docs
-        working-directory: tauri
+        working-directory: ./tauri/core/tauri
         run: cargo doc --no-deps
       - name: run rustdocusaurus
         uses: tauri-apps/rustdocusaurus/github-action@v1
@@ -39,7 +43,14 @@ jobs:
           targetPath: ./tauri-docs/docs/en/api/rust/
           sidebarPath: ./tauri-docs/sidebars.json
           linksRoot: /docs/api/rust/
-          cratesToProcess: "tauri,tauri_api,tauri_utils"
+          cratesToProcess: "tauri"
+      - name: run typedocusaurus
+        uses: tauri-apps/typedocusaurus@v1
+        with:
+          originPath: ./tauri/tooling/api/
+          sidebarFile: sidebars.json
+          targetPath: en/api/js
+          docusaurusPath: ./tauri-docs/
       - name: git config
         run: |
           git config --global user.name "${{ github.event.inputs.gitName }}"
@@ -48,7 +59,7 @@ jobs:
         uses: tauri-apps/create-pull-request@v3.4.1
         with:
           token: ${{ secrets.TAURI_BOT_PAT }}
-          commit-message: "chore(docs): Update Rust docs"
+          commit-message: "chore(docs): Update Rust & TS docs"
           branch: docs/release
           path: tauri-docs
           title: Update Docs
